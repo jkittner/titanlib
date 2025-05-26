@@ -3,15 +3,11 @@ name: Packaging
 # on: [push]
 on:
   push:
-    tags:
-      - '*'
-    branches:
-      - package
 
 jobs:
   setup:
     name: Build SWIG wrappers
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
@@ -32,8 +28,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # os: [ubuntu-20.04, windows-2019, macos-11]
-        os: [ubuntu-20.04]
+        os: [ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v3
@@ -56,7 +51,8 @@ jobs:
           # PyPy compilation on MACOS doesn't work, possibly since there is no available numpy release for this
           # Armadillo isn't available for i687 on Centos 7, making compilation more complicated
           # # Musllinux doesn't use yum as its package manager
-          CIBW_SKIP: pp*-macosx* *i686* *musllinux* *p36* *p37* *p38* pp*
+          # CIBW_SKIP: pp*-macosx* *i686* *musllinux* *p36* *p37* *p38* pp*
+          CIBW_BUILD: cp31*-manylinux_x86_64*
           CIBW_BEFORE_ALL_LINUX: |
               yum install -y lapack-devel gsl-devel armadillo-devel
               curl -L -O https://archives.boost.io/release/1.72.0/source/boost_1_72_0.tar.gz
@@ -84,23 +80,3 @@ jobs:
         with:
           name: wheels
           path: ./wheelhouse/*.whl
-
-
-  pypi-publish:
-    needs: build_wheels
-    name: Upload release to PyPI
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4.1.7
-        with:
-          name: wheels
-          path: wheelhouse
-      - name: Publish
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          packages-dir: wheelhouse/
-          name: pypi
-          user: __token__
-          password: ${{ secrets.PYPI_TOKEN }}
-          url: https://pypi.org/p/titanlib
-          skip_existing: true

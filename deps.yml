@@ -8,5 +8,5 @@ dependencies:
 - cmake
 - libblas
 - doxygen
-- numpy>=1.7,<2
+- numpy>2
 - python=3.10.4
