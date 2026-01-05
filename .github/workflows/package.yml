@@ -52,7 +52,7 @@ jobs:
           # Armadillo isn't available for i687 on Centos 7, making compilation more complicated
           # # Musllinux doesn't use yum as its package manager
           # CIBW_SKIP: pp*-macosx* *i686* *musllinux* *p36* *p37* *p38* pp*
-          CIBW_BUILD: cp31*-manylinux_x86_64*
+          CIBW_BUILD: cp314*-manylinux_x86_64*
           CIBW_BEFORE_ALL_LINUX: |
               yum install -y lapack-devel gsl-devel armadillo-devel
               curl -L -O https://archives.boost.io/release/1.72.0/source/boost_1_72_0.tar.gz
